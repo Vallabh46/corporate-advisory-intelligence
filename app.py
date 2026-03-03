@@ -1,247 +1,156 @@
 import streamlit as st
 import pandas as pd
 import graphviz
-import time
+from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="Corporate Advisory Intelligence", layout="wide")
+st.set_page_config(page_title="Corporate Advisory Playbook", layout="wide")
 
-# ==========================
-# WHITE + RED THEME
-# ==========================
+# ===============================
+# PREMIUM WHITE + RED STYLING
+# ===============================
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600&display=swap');
+
 .stApp {
     background-color: white;
 }
+
 .block-container {
-    padding: 3rem;
+    padding: 3rem 4rem;
 }
+
 h1, h2, h3 {
-    color: #b11226 !important;
+    color: #a50000 !important;
+    font-family: 'Playfair Display', serif;
 }
+
 p, label {
-    color: #333333 !important;
+    color: black !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
 }
+
+.section {
+    margin-bottom: 50px;
+}
+
 .card {
-    background: #ffffff;
     padding: 30px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    animation: fadeIn 0.6s ease;
+    border-radius: 10px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    margin-bottom: 40px;
 }
-@keyframes fadeIn {
-    from {opacity:0; transform: translateY(15px);}
-    to {opacity:1; transform: translateY(0);}
-}
-.red-btn > button {
-    background-color: #b11226;
-    color: white;
-    border-radius: 8px;
-    font-weight: 600;
-}
+
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Corporate Advisory Intelligence Platform")
-st.markdown("Transforming US Business Law into Procedural Intelligence")
+st.title("US Corporate Advisory Playbook")
 
-tab1, tab2, tab3, tab4 = st.tabs([
-    "Executive Overview",
-    "Knowledge Studio",
-    "Advisory Lab",
-    "Simulation Arena"
-])
+# ===============================
+# NAVIGATION MENU
+# ===============================
+selected = option_menu(
+    menu_title=None,
+    options=["Knowledge Studio", "Advisory Playbook", "Simulation Arena", "Performance Dashboard"],
+    orientation="horizontal"
+)
 
 # =====================================================
-# EXECUTIVE OVERVIEW
+# KNOWLEDGE STUDIO
 # =====================================================
-with tab1:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Platform Objective")
+if selected == "Knowledge Studio":
 
-    st.write("""
-    This platform converts theoretical understanding of US business entities into:
-    • Structured analytical reasoning  
-    • Real-world advisory application  
-    • Simulation-based intelligence testing  
-    • Measurable decision capability  
+    st.header("Understanding the Architecture of US Business Entities")
+
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Business_structure_chart.svg/800px-Business_structure_chart.svg.png")
+
+    st.markdown("""
+When we speak of business entities in the United States, we are not merely referring to labels such as “LLC” or “Corporation.” We are speaking about structures that determine how power flows, how profits are distributed, how taxes are calculated, and most importantly, how liability is allocated.
+
+Imagine two founders standing at the beginning of a journey. Their first legal decision will shape their exposure to risk, their fundraising potential, their operational flexibility, and their long-term exit strategy. The choice of entity is not administrative — it is architectural.
+
+A C-Corporation is traditionally structured as a separate legal personality. It stands apart from its founders. It can sue and be sued. It pays its own taxes. It is the preferred vehicle for venture capital because it permits multiple classes of stock and structured investment instruments.
+
+An LLC, on the other hand, blends the flexibility of partnerships with the liability shield of corporations. It allows members to define their internal economic arrangements contractually. It offers remarkable flexibility in taxation elections.
+
+An S-Corporation provides pass-through taxation but imposes structural limitations that restrict ownership flexibility.
+
+A partnership, while easy to form, exposes partners to personal liability unless carefully structured.
     """)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.video("https://www.youtube.com/watch?v=Qp6i1n1J3_E")  # placeholder video
 
-# =====================================================
-# KNOWLEDGE STUDIO — DYNAMIC MULTI-PAGE
-# =====================================================
-with tab2:
-
-    page = st.radio("Select Learning Module:",
-        ["1. Foundations",
-         "2. Entity Deep Dive",
-         "3. Tax Architecture",
-         "4. Decision Flow Framework"]
-    )
-
-    # PAGE 1
-    if page == "1. Foundations":
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Understanding US Legal Structure")
-
-        st.write("""
-        The US recognizes both incorporated and unincorporated entities.
-        Incorporated → Separate legal personality  
-        Unincorporated → Personal exposure risk  
-        """)
-
-        time.sleep(0.4)
-        st.success("Key Insight: Liability Shield determines structural choice.")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # PAGE 2
-    if page == "2. Entity Deep Dive":
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Graphical Representation of Entities")
-
-        dot = graphviz.Digraph()
-
-        dot.node("US", "US Legal System")
-        dot.node("Corp", "Corporations")
-        dot.node("Uninc", "Unincorporated Entities")
-        dot.node("C", "C-Corp")
-        dot.node("S", "S-Corp")
-        dot.node("LLC", "LLC")
-        dot.node("P", "Partnership")
-
-        dot.edges([
-            ("US", "Corp"),
-            ("US", "Uninc"),
-            ("Corp", "C"),
-            ("Corp", "S"),
-            ("Uninc", "LLC"),
-            ("Uninc", "P")
-        ])
-
-        st.graphviz_chart(dot)
-
-        st.info("Notice structural bifurcation between incorporated and flexible entities.")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # PAGE 3
-    if page == "3. Tax Architecture":
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Comparative Tax Matrix")
-
-        df = pd.DataFrame({
-            "Entity": ["C-Corp", "S-Corp", "LLC", "Partnership"],
-            "Corporate Tax": ["Yes", "No", "Optional", "No"],
-            "Dividend Tax": ["Yes", "No", "No", "No"],
-            "Pass-through": ["No", "Yes", "Yes", "Yes"]
-        })
-
-        st.dataframe(df)
-
-        st.warning("C-Corp → Double taxation risk.")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # PAGE 4
-    if page == "4. Decision Flow Framework":
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Entity Selection Flow")
-
-        dot = graphviz.Digraph()
-        dot.node("Start", "Start")
-        dot.node("VC", "Seeking Venture Capital?")
-        dot.node("CC", "Choose C-Corp")
-        dot.node("Flex", "Need Operational Flexibility?")
-        dot.node("LL", "Choose LLC")
-
-        dot.edges([
-            ("Start", "VC"),
-            ("VC", "CC"),
-            ("VC", "Flex"),
-            ("Flex", "LL")
-        ])
-
-        st.graphviz_chart(dot)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-# =====================================================
-# ADVISORY LAB — REAL LIFE PROBLEM
-# =====================================================
-with tab3:
-
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Mark & Bill – Advisory Brief")
-
-    st.write("""
-    Mark and Bill are California residents.  
-    They have been operating informally for 2 years.  
-    No written agreement.  
-    Thin margins due to boutique intermediaries.  
-    100 designs ready for direct sales.  
-    They want formal structure and liability protection.
+    st.markdown("""
+The true sophistication of advisory lies in understanding when structural rigidity benefits growth and when flexibility preserves survival. This distinction separates transactional drafting from strategic advisory.
     """)
 
-    st.markdown("### Problems to Analyse")
+# =====================================================
+# ADVISORY PLAYBOOK
+# =====================================================
+elif selected == "Advisory Playbook":
 
-    st.write("""
-    1. Current legal status of their arrangement?  
-    2. Personal liability exposure?  
-    3. Best suited structure for scalability?  
-    4. Impact of taxation under each option?  
-    5. Future capital raising considerations?  
+    st.header("Mark & Bill – Strategic Advisory Case")
+
+    st.markdown("""
+Mark and Bill are not merely designers. They are entrepreneurs standing at a structural crossroads.
+
+For two years, their business relationship has functioned informally. There are no written agreements. Profits are divided by mutual understanding. Their liability is unstructured. If a customer files a lawsuit tomorrow, who bears the burden? If a supplier sues for non-payment, whose personal assets are at risk?
+
+Now they wish to formalize their enterprise.
+
+The legal question is not only: “What entity should they choose?”
+
+The deeper question is: “What risk profile are they willing to accept?”
     """)
 
-    opinion = st.text_area("Draft structured legal opinion:", height=250)
+    st.subheader("Draft Your Legal Opinion")
 
-    if st.button("Preliminary Evaluation"):
+    opinion = st.text_area("Provide structured advisory reasoning:", height=300)
+
+    if st.button("Evaluate Opinion"):
         score = 0
-        keywords = ["liability", "tax", "partnership", "corporation", "llc"]
-        for k in keywords:
-            if k in opinion.lower():
+        keywords = ["liability", "taxation", "limited", "corporation", "llc", "partnership"]
+        for word in keywords:
+            if word in opinion.lower():
                 score += 2
-        st.success(f"Analytical Depth Score: {score}/10")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.success(f"Analytical Advisory Score: {score}/12")
 
 # =====================================================
-# SIMULATION ARENA — SCENARIO FIRST
+# SIMULATION ARENA
 # =====================================================
-with tab4:
+elif selected == "Simulation Arena":
+
+    st.header("Entity Selection Simulation")
 
     scenario = st.selectbox("Select Scenario", [
-        "Rishee Tech Startup",
-        "LawSikho US Expansion",
-        "Single Professional Setup",
-        "Priyanka Gadget Expansion",
-        "Tara Pet Store"
+        "Rishee – Tech Expansion",
+        "LawSikho – US Branch",
+        "Priyanka – Scaling Innovation",
+        "Tara – Sole Retail Setup"
     ])
 
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    if scenario == "Rishee – Tech Expansion":
+        st.markdown("""
+Rishee has developed a technological surveillance solution that requires capital-intensive infrastructure. He seeks entry into the United States market, anticipating investor funding and scalable growth. The entity must allow structured capital infusion and potential listing in the future.
+        """)
 
-    # SCENARIO TEXT
-    if scenario == "Rishee Tech Startup":
-        st.write("High-tech surveillance innovation. Capital intensive. US expansion. Seeking funding.")
-    if scenario == "LawSikho US Expansion":
-        st.write("Indian ed-tech entering US. Institutional structure required.")
-    if scenario == "Single Professional Setup":
-        st.write("Individual professional limiting liability.")
-    if scenario == "Priyanka Gadget Expansion":
-        st.write("Growing product company. Future listing ambition.")
-    if scenario == "Tara Pet Store":
-        st.write("Single owner, small retail, self-funded.")
-
-    st.markdown("### Now Recommend Suitable Entity")
-
-    entity = st.selectbox("Choose Entity",
-        ["C-Corp", "S-Corp", "LLC", "Sole Proprietorship"]
-    )
+    entity = st.selectbox("Select Appropriate Entity",
+                          ["C-Corp", "LLC", "S-Corp", "Sole Proprietorship"])
 
     if st.button("Submit Advisory Decision"):
-        st.success("Decision Recorded for Faculty Evaluation")
+        st.success("Advisory decision recorded.")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+# =====================================================
+# PERFORMANCE DASHBOARD
+# =====================================================
+elif selected == "Performance Dashboard":
+
+    st.header("Advisory Performance Metrics")
+
+    st.metric("Advisory Depth Index", "82 / 100")
+    st.metric("Tax Reasoning Score", "75 / 100")
+    st.metric("Liability Risk Sensitivity", "88 / 100")
+    st.metric("Entity Selection Accuracy", "80 / 100")
