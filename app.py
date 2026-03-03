@@ -1,171 +1,204 @@
 import streamlit as st
+import pandas as pd
+import random
 from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
 
-# =========================
-# GLOBAL STYLE
-# =========================
+# ============================================================
+# PREMIUM DESIGN SYSTEM
+# ============================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
 
 .stApp { background-color: white; }
 
-.block-container { padding: 2rem 3rem; }
+.block-container { padding: 2rem 5rem; }
 
 h1, h2, h3 {
-    font-family: 'Poppins', sans-serif;
-    color: #b11226 !important;
+    font-family: 'Playfair Display', serif;
+    color: #1a237e !important;
 }
 
 p {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 18px;
-    line-height: 1.8;
-    color: black !important;
+    line-height: 1.9;
+    color: #111 !important;
 }
 
-.lesson-video {
-    height: 300px;
-    background: linear-gradient(90deg, #b11226, #ff4d4d);
-    border-radius: 12px;
-    margin-bottom: 30px;
-    animation: fadeIn 1s ease;
+.section-card {
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease;
 }
 
 @keyframes fadeIn {
-    from {opacity:0; transform: translateY(20px);}
+    from {opacity:0; transform: translateY(30px);}
     to {opacity:1; transform: translateY(0);}
 }
 
-.locked {
-    opacity: 0.4;
+.chapter-header {
+    border-left: 6px solid #f9a825;
+    padding-left: 15px;
+}
+
+.progress-ring {
+    height: 180px;
+    width: 180px;
+    border-radius: 50%;
+    background: conic-gradient(#1a237e var(--percent), #eee 0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:22px;
+    color:#1a237e;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# SESSION STATE
-# =========================
-if "progress" not in st.session_state:
-    st.session_state.progress = 0
-    st.session_state.completed_lessons = []
-    st.session_state.current_lesson = "Module 1 - Lesson 1"
+# ============================================================
+# STATE
+# ============================================================
+if "completed_chapters" not in st.session_state:
+    st.session_state.completed_chapters = []
+if "quiz_score" not in st.session_state:
+    st.session_state.quiz_score = 0
+if "quiz_total" not in st.session_state:
+    st.session_state.quiz_total = 0
 
-# =========================
-# COURSE STRUCTURE
-# =========================
-course = {
-    "Module 1: Foundations": [
-        "Module 1 - Lesson 1",
-        "Module 1 - Lesson 2"
-    ],
-    "Module 2: Tax Architecture": [
-        "Module 2 - Lesson 1",
-        "Module 2 - Lesson 2"
-    ],
-    "Module 3: Capital Structuring": [
-        "Module 3 - Lesson 1"
+selected = option_menu(
+    None,
+    ["Knowledge Studio", "Assessment", "Progress Intelligence"],
+    orientation="horizontal"
+)
+
+# ============================================================
+# KNOWLEDGE STUDIO
+# ============================================================
+if selected == "Knowledge Studio":
+
+    chapters = {
+        "Form 1040 Architecture": """
+Form 1040 is not merely a form; it is the structural culmination of all income reporting.
+It acts as a master summary. Schedules such as Schedule 1, 2, 3, A, B, C, D, E, F and H
+feed into this central document.
+
+Gross income begins with wages (Form W-2), interest (Schedule B),
+dividends, IRA distributions, pensions, Social Security,
+capital gains (Schedule D), and additional income via Schedule 1.
+""",
+
+        "Accounting Period & Methods": """
+An accounting period defines the time frame in which income is measured.
+Individuals typically use a calendar year.
+Businesses may adopt fiscal years.
+
+Under the cash method, income is reported when received.
+Under accrual, income is reported when earned.
+Hybrid methods blend both approaches.
+""",
+
+        "FICA & Self Employment Tax": """
+FICA funds Social Security and Medicare.
+Employees pay 7.65%, employers match it.
+
+Self-employed individuals pay 15.3%.
+However, the IRS allows deduction of the employer-equivalent half.
+This is why net earnings are multiplied by 92.35%.
+"""
+    }
+
+    chapter = st.selectbox("Select Chapter", list(chapters.keys()))
+
+    st.markdown("<div class='section-card'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='chapter-header'><h2>{chapter}</h2></div>", unsafe_allow_html=True)
+
+    st.write(chapters[chapter])
+
+    st.image("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40",
+             use_column_width=True)
+
+    if st.button("Mark Chapter Complete"):
+        if chapter not in st.session_state.completed_chapters:
+            st.session_state.completed_chapters.append(chapter)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ============================================================
+# ASSESSMENT
+# ============================================================
+elif selected == "Assessment":
+
+    questions = [
+        {
+            "q": "Which income is always taxable?",
+            "options": ["Municipal bond interest",
+                        "Child support",
+                        "Tips reported to employer",
+                        "Life insurance proceeds"],
+            "answer": "Tips reported to employer",
+            "explanation": "Tips are taxable income."
+        },
+        {
+            "q": "Which interest is federally tax-exempt?",
+            "options": ["Corporate bond",
+                        "Bank savings",
+                        "Treasury bond",
+                        "Municipal bond"],
+            "answer": "Municipal bond",
+            "explanation": "Municipal bonds are generally federally tax exempt."
+        }
     ]
-}
 
-# =========================
-# SIDEBAR CURRICULUM
-# =========================
-with st.sidebar:
-    st.header("Course Curriculum")
+    for q in questions:
+        st.markdown("<div class='section-card'>", unsafe_allow_html=True)
+        st.subheader(q["q"])
+        choice = st.radio("", q["options"], key=q["q"])
 
-    for module, lessons in course.items():
-        st.subheader(module)
-
-        unlocked = True
-        if module == "Module 2: Tax Architecture" and "Module 1 - Lesson 2" not in st.session_state.completed_lessons:
-            unlocked = False
-        if module == "Module 3: Capital Structuring" and "Module 2 - Lesson 2" not in st.session_state.completed_lessons:
-            unlocked = False
-
-        for lesson in lessons:
-            if lesson in st.session_state.completed_lessons:
-                label = f"✔ {lesson} (15 min)"
+        if st.button("Submit", key=q["q"]+"submit"):
+            st.session_state.quiz_total += 1
+            if choice == q["answer"]:
+                st.success("Correct")
+                st.session_state.quiz_score += 1
             else:
-                label = f"{lesson} (15 min)"
+                st.error("Incorrect")
 
-            if not unlocked:
-                st.markdown(f"<div class='locked'>🔒 {label}</div>", unsafe_allow_html=True)
-            else:
-                if st.button(label):
-                    st.session_state.current_lesson = lesson
+            st.info(q["explanation"])
 
-# =========================
-# MAIN CONTENT AREA
-# =========================
-st.title("US Corporate Advisory Playbook")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# Progress bar
-total_lessons = sum(len(v) for v in course.values())
-progress_percent = len(st.session_state.completed_lessons) / total_lessons
-st.progress(progress_percent)
+# ============================================================
+# PROGRESS INTELLIGENCE
+# ============================================================
+elif selected == "Progress Intelligence":
 
-st.write(f"Course Progress: {int(progress_percent*100)}%")
+    total_chapters = 3
+    chapter_completion = len(st.session_state.completed_chapters)
+    percent = int((chapter_completion / total_chapters) * 100)
 
-# =========================
-# LESSON CONTENT
-# =========================
-st.header(st.session_state.current_lesson)
+    st.markdown("<div class='section-card'>", unsafe_allow_html=True)
+    st.subheader("Learning Progress")
 
-# Video-like animated section
-st.markdown("<div class='lesson-video'></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div class='progress-ring' style='--percent:{percent}%;'>{percent}%</div>",
+        unsafe_allow_html=True
+    )
 
-if st.session_state.current_lesson == "Module 1 - Lesson 1":
-    st.write("""
-When entering the United States market, the first legal decision an entrepreneur must take is the choice of entity. 
-This decision determines liability allocation, taxation structure, and governance architecture.
-    """)
+    st.write(f"Chapters Completed: {chapter_completion} / {total_chapters}")
+    st.write(f"Quiz Accuracy: {st.session_state.quiz_score} / {st.session_state.quiz_total}")
 
-elif st.session_state.current_lesson == "Module 1 - Lesson 2":
-    st.write("""
-A corporation exists as a separate legal personality. 
-It shields shareholders through the corporate veil, 
-provided formalities are respected.
-    """)
+    st.subheader("AI Generated Feedback")
 
-elif st.session_state.current_lesson == "Module 2 - Lesson 1":
-    st.write("""
-Taxation architecture is central to structural design. 
-C-Corporations face double taxation, whereas LLCs may elect pass-through treatment.
-    """)
+    if percent > 70:
+        st.success("You demonstrate strong conceptual clarity in income recognition.")
+    elif percent > 30:
+        st.warning("You understand foundations but require deeper reinforcement.")
+    else:
+        st.error("Significant revision recommended before advisory application.")
 
-elif st.session_state.current_lesson == "Module 2 - Lesson 2":
-    st.write("""
-S-Corporations provide pass-through taxation but impose ownership restrictions.
-They cannot have foreign shareholders.
-    """)
-
-elif st.session_state.current_lesson == "Module 3 - Lesson 1":
-    st.write("""
-Capital structuring is decisive when venture funding is anticipated.
-Only C-Corporations permit multiple classes of stock.
-    """)
-
-# =========================
-# COMPLETE LESSON BUTTON
-# =========================
-if st.button("Mark Lesson Complete"):
-    if st.session_state.current_lesson not in st.session_state.completed_lessons:
-        st.session_state.completed_lessons.append(st.session_state.current_lesson)
-
-# =========================
-# CONTINUE LEARNING
-# =========================
-def next_lesson():
-    lessons_flat = [l for lessons in course.values() for l in lessons]
-    current_index = lessons_flat.index(st.session_state.current_lesson)
-    if current_index + 1 < len(lessons_flat):
-        return lessons_flat[current_index + 1]
-    return None
-
-next_l = next_lesson()
-if next_l:
-    if st.button("Continue Learning"):
-        st.session_state.current_lesson = next_l
+    st.markdown("</div>", unsafe_allow_html=True)
