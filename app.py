@@ -1,208 +1,181 @@
 import streamlit as st
+import pandas as pd
+import graphviz
+import json
+import requests
+from streamlit_lottie import st_lottie
 
 st.set_page_config(page_title="Corporate Advisory Intelligence", layout="wide")
 
-# -----------------------------
-# CORPORATE GLOBAL STYLING
-# -----------------------------
+# =============================
+# PREMIUM GLOBAL STYLE
+# =============================
 st.markdown("""
 <style>
-
-/* Remove Streamlit default padding */
+.stApp {
+    background: linear-gradient(120deg, #141e30, #243b55);
+}
 .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding: 3rem;
 }
-
-/* Background */
-body {
-    background-color: #f4f6f9;
+h1, h2, h3, p, label {
+    color: white !important;
 }
-
-/* Header */
-.main-title {
-    font-size: 38px;
-    font-weight: 600;
-    color: #111827;
-    letter-spacing: -0.5px;
-}
-
-.subtitle {
-    font-size: 16px;
-    color: #6b7280;
-    margin-top: -8px;
-}
-
-/* Card */
 .card {
-    background: white;
-    padding: 35px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
+    background: rgba(255,255,255,0.08);
+    padding: 30px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    animation: fadeIn 0.7s ease;
 }
-
-/* Section Title */
-.section-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #1f2937;
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
 }
-
-/* Metric */
 .metric-card {
-    background: #111827;
-    color: white;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
     padding: 25px;
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 15px;
+    text-align:center;
 }
-
-/* Buttons */
-div.stButton > button {
-    background-color: #111827;
-    color: white;
-    border-radius: 8px;
-    padding: 0.6em 1.5em;
-    font-weight: 500;
-    border: none;
-}
-
-div.stButton > button:hover {
-    background-color: #1f2937;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# HEADER
-# -----------------------------
-st.markdown('<div class="main-title">Corporate Advisory Intelligence Platform</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Simulation-Based US Entity & Incorporation Training</div>', unsafe_allow_html=True)
-st.markdown("---")
+st.title("Corporate Advisory Intelligence Platform")
+st.write("Interactive US Business Structure & Simulation Engine")
 
-# -----------------------------
-# SESSION STATE
-# -----------------------------
-if "stage" not in st.session_state:
-    st.session_state.stage = 1
-
-# -----------------------------
+# =============================
 # NAVIGATION
-# -----------------------------
-col_nav1, col_nav2, col_nav3 = st.columns(3)
+# =============================
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "Executive Overview",
+    "Knowledge Studio",
+    "Advisory Lab",
+    "Simulation Arena",
+    "Intelligence Dashboard"
+])
 
-with col_nav1:
-    if st.button("1️⃣ Learning Module"):
-        st.session_state.stage = 1
-
-with col_nav2:
-    if st.button("2️⃣ Advisory Scenario"):
-        st.session_state.stage = 2
-
-with col_nav3:
-    if st.button("3️⃣ Simulation Engine"):
-        st.session_state.stage = 3
-
-st.markdown("---")
-
-# -----------------------------
-# STAGE 1 — LEARNING
-# -----------------------------
-if st.session_state.stage == 1:
-
+# =============================
+# EXECUTIVE OVERVIEW
+# =============================
+with tab1:
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">US Business Entity Structures</div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("### C-Corporation")
-        st.write("• Separate legal entity")
-        st.write("• Double taxation")
-        st.write("• Venture capital aligned")
-        st.write("• Preferred stock permitted")
-
-        st.markdown("### LLC")
-        st.write("• Hybrid structure")
-        st.write("• Limited liability")
-        st.write("• Flexible taxation")
-
-    with col2:
-        st.markdown("### S-Corporation")
-        st.write("• Pass-through taxation")
-        st.write("• US ownership restriction")
-        st.write("• 100 shareholder limit")
-
-        st.markdown("### Partnership")
-        st.write("• Flow-through taxation")
-        st.write("• Joint liability exposure")
-
+    st.subheader("Platform Vision")
+    st.write("""
+    Transforming static legal education into procedural intelligence training.
+    • Interactive learning
+    • Structured advisory reasoning
+    • Simulation-based decision making
+    • Measurable advisory intelligence
+    """)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# -----------------------------
-# STAGE 2 — ADVISORY SCENARIO
-# -----------------------------
-if st.session_state.stage == 2:
+# =============================
+# KNOWLEDGE STUDIO
+# =============================
+with tab2:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Client Advisory Brief</div>', unsafe_allow_html=True)
+    st.subheader("Entity Comparison Table")
+
+    data = {
+        "Entity": ["C-Corp", "S-Corp", "LLC", "Partnership"],
+        "Liability": ["Limited", "Limited", "Limited", "Unlimited (GP)"],
+        "Taxation": ["Double", "Pass-through", "Flexible", "Pass-through"],
+        "VC Friendly": ["Yes", "No", "Limited", "No"]
+    }
+
+    df = pd.DataFrame(data)
+    st.dataframe(df)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("Entity Selection Flow")
+
+    dot = graphviz.Digraph()
+    dot.node("Start", "Start")
+    dot.node("Funding", "Seeking VC?")
+    dot.node("CCorp", "Choose C-Corp")
+    dot.node("Flex", "Need Flexibility?")
+    dot.node("LLC", "Choose LLC")
+    dot.edges([
+        ("Start", "Funding"),
+        ("Funding", "CCorp"),
+        ("Funding", "Flex"),
+        ("Flex", "LLC")
+    ])
+    st.graphviz_chart(dot)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# =============================
+# ADVISORY LAB (Activity 1)
+# =============================
+with tab3:
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("Legal Opinion Drafting – Mark & Bill")
 
     st.write("""
-Two Indian founders are entering the US market.
-
-• Foreign ownership  
-• Multi-member structure  
-• Planned $1.2M capital raise  
-• Institutional investment expected  
-
-Select the appropriate entity structure.
+    Draft a structured legal opinion addressing:
+    1. Suitable business model
+    2. S-Corp limitations
+    3. Taxation comparison
     """)
 
-    entity = st.selectbox("Recommended Entity",
-                          ["C-Corporation", "S-Corporation", "LLC", "Partnership"])
+    opinion = st.text_area("Draft your legal opinion here:", height=250)
 
-    if st.button("Submit Recommendation"):
-        if entity == "C-Corporation":
-            st.success("Correct recommendation aligned with venture funding objectives.")
-        else:
-            st.error("Reconsider investor and ownership implications.")
+    if st.button("Evaluate Opinion"):
+        score = 0
+        if "liability" in opinion.lower():
+            score += 3
+        if "tax" in opinion.lower():
+            score += 3
+        if "corporation" in opinion.lower():
+            score += 2
+        if "llc" in opinion.lower():
+            score += 2
+
+        st.success(f"Preliminary Advisory Score: {score}/10")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# -----------------------------
-# STAGE 3 — SIMULATION
-# -----------------------------
-if st.session_state.stage == 3:
+# =============================
+# SIMULATION ARENA (Activity 2)
+# =============================
+with tab4:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Delaware Formation Simulation</div>', unsafe_allow_html=True)
+    st.subheader("Entity Advisory Simulation")
 
-    workflow = [
-        "Name Reservation",
-        "Registered Agent Appointment",
-        "Certificate of Formation Drafting",
-        "State Filing",
-        "Operating Agreement Drafting",
-        "EIN Application",
-        "BOI Filing (FinCEN)",
-        "Corporate Bank Setup"
-    ]
+    example = st.selectbox("Select Scenario", [
+        "Rishee Tech Startup",
+        "LawSikho US Expansion",
+        "Single Professional Setup",
+        "Priyanka Gadget Expansion",
+        "Tara Pet Store"
+    ])
 
-    col1, col2 = st.columns([2,1])
+    choice = st.selectbox("Recommended Entity",
+                          ["C-Corp", "S-Corp", "LLC", "Sole Proprietorship"])
 
-    with col1:
-        for step in workflow:
-            st.write("⬜", step)
+    if st.button("Submit Decision"):
+        st.success("Decision recorded for evaluation.")
 
-    with col2:
-        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-        st.write("Compliance Score")
-        st.write("100 / 100")
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# =============================
+# INTELLIGENCE DASHBOARD
+# =============================
+with tab5:
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("Advisory Intelligence Metrics")
+
+    st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+    st.write("Advisory Readiness Index")
+    st.write("78 / 100")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
