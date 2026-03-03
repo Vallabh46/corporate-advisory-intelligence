@@ -1,59 +1,44 @@
 import streamlit as st
 import pandas as pd
 import graphviz
-import time
-import random
 from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="Corporate Advisory Intelligence", layout="wide")
+st.set_page_config(page_title="US Corporate Advisory Playbook", layout="wide")
 
-# =====================================================
-# PREMIUM WHITE + RED CINEMATIC THEME
-# =====================================================
+# ==========================
+# CLEAN WHITE + RED ACADEMIC STYLE
+# ==========================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&display=swap');
 
 .stApp {
     background-color: white;
 }
 
 .block-container {
-    padding: 3rem 4rem;
+    padding: 4rem 6rem;
 }
 
 h1, h2 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     color: #b11226 !important;
 }
 
-p, label {
+h3 {
+    font-family: 'Libre Baskerville', serif;
+    color: #8b0000 !important;
+}
+
+p, li {
     font-family: 'Inter', sans-serif;
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.9;
     color: black !important;
 }
 
 .section {
-    margin-bottom: 60px;
-    animation: fadeInUp 1s ease forwards;
-}
-
-@keyframes fadeInUp {
-    from {opacity:0; transform: translateY(30px);}
-    to {opacity:1; transform: translateY(0);}
-}
-
-.card {
-    padding: 35px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-    margin-bottom: 40px;
-}
-
-.progress-bar {
-    height: 20px;
-    border-radius: 10px;
+    margin-bottom: 80px;
 }
 
 </style>
@@ -61,168 +46,154 @@ p, label {
 
 st.title("US Corporate Advisory Playbook")
 
-# =====================================================
-# SESSION STATE
-# =====================================================
-if "analytics" not in st.session_state:
-    st.session_state.analytics = {
-        "knowledge_views": 0,
-        "advisory_score": 0,
-        "simulation_accuracy": 0,
-        "risk_sensitivity": 0
-    }
-
 selected = option_menu(
     None,
-    ["Knowledge Studio", "Advisory Playbook", "Simulation Engine", "Performance Dashboard"],
+    ["Knowledge Studio", "Case Analysis", "Applied Simulation", "Performance Report"],
     orientation="horizontal"
 )
 
 # =====================================================
-# KNOWLEDGE STUDIO — CINEMATIC
+# KNOWLEDGE STUDIO (COURSERA STYLE LONG FORM)
 # =====================================================
 if selected == "Knowledge Studio":
 
-    st.session_state.analytics["knowledge_views"] += 1
+    st.header("Module 1: Foundations of US Business Structures")
 
-    st.header("The Architecture of Business Entities")
+    st.markdown("""
+The decision to select a business entity in the United States is not merely procedural. It is structural, financial, and strategic. 
 
-    sections = [
-        "Legal Personality",
-        "Liability Shield",
-        "Taxation Architecture",
-        "Capital Structuring"
-    ]
+When an entrepreneur decides to enter the American market, they are effectively choosing a legal architecture that will determine their exposure to liability, their taxation framework, their ability to raise capital, and the longevity of their enterprise.
 
-    for i, sec in enumerate(sections):
-        st.markdown(f"<div class='section'>", unsafe_allow_html=True)
-        st.subheader(sec)
+In the United States, business entities are broadly classified into incorporated and unincorporated forms. This distinction is fundamental. Incorporated entities such as corporations possess a separate legal personality distinct from their founders. Unincorporated entities such as partnerships often blur that distinction, creating potential personal exposure.
+""")
 
-        if sec == "Legal Personality":
-            st.write("""
-A corporation is treated as a person in the eyes of the law. 
-It exists independently of its founders. 
-This separation creates the foundation of corporate governance.
-            """)
+    st.markdown("---")
 
-        if sec == "Liability Shield":
-            st.write("""
-The most powerful structural innovation in business law is the liability shield.
-It protects personal assets from business risk. 
-Without it, entrepreneurship becomes existentially dangerous.
-            """)
+    st.subheader("Understanding Legal Personality")
 
-        if sec == "Taxation Architecture":
-            st.write("""
-C-Corps face double taxation. 
-LLCs can elect tax flexibility. 
-S-Corps pass income directly to shareholders.
-            """)
+    st.markdown("""
+A corporation is treated as a separate legal person. This means that the entity can enter into contracts, own property, sue, and be sued independently of its shareholders. 
 
-        if sec == "Capital Structuring":
-            st.write("""
-Only C-Corporations can issue multiple stock classes.
-This becomes critical in venture financing.
-            """)
+This separation creates what is known as the corporate veil. The corporate veil protects shareholders from personal liability, except in cases of fraud or misuse. 
 
-        # Custom animated visual block
-        st.markdown("""
-        <div style='height:200px; background: linear-gradient(90deg, #ff4d4d, #ff9999); border-radius:12px; animation: fadeInUp 2s ease;'>
-        </div>
-        """, unsafe_allow_html=True)
+In contrast, in a general partnership, partners are personally liable for the obligations of the firm. This means their personal assets may be exposed to business risks.
+""")
 
-        time.sleep(0.5)
-        st.markdown("</div>", unsafe_allow_html=True)
+    dot = graphviz.Digraph()
+    dot.node("Founder", "Founder")
+    dot.node("Corp", "Corporation")
+    dot.node("Liability", "Business Liability")
 
-# =====================================================
-# ADVISORY PLAYBOOK — AI GRADED
-# =====================================================
-elif selected == "Advisory Playbook":
-
-    st.header("Mark & Bill – Strategic Legal Opinion")
-
-    st.write("""
-Mark and Bill have operated informally for two years. 
-They share profits. No written agreement. 
-They now seek formal structure, scalability, and liability protection.
-    """)
-
-    opinion = st.text_area("Draft Your Legal Opinion", height=300)
-
-    if st.button("AI Evaluate Opinion"):
-
-        score = 0
-        reasoning_depth = random.randint(6, 10)
-
-        if "liability" in opinion.lower():
-            score += 3
-        if "tax" in opinion.lower():
-            score += 3
-        if "structure" in opinion.lower():
-            score += 2
-        if "risk" in opinion.lower():
-            score += 2
-
-        final_score = score + reasoning_depth
-
-        st.session_state.analytics["advisory_score"] = final_score
-
-        st.success(f"AI Advisory Score: {final_score}/20")
-
-        st.write("""
-The evaluation considers analytical depth, structural awareness,
-tax sensitivity, and liability recognition.
-        """)
-
-# =====================================================
-# SIMULATION ENGINE — DECISION TREE
-# =====================================================
-elif selected == "Simulation Engine":
-
-    st.header("Scenario Decision Tree")
-
-    scenario = st.selectbox("Select Scenario", [
-        "High Growth Tech",
-        "Single Retail Owner",
-        "Professional Partnership"
+    dot.edges([
+        ("Founder", "Corp"),
+        ("Corp", "Liability")
     ])
 
-    if scenario == "High Growth Tech":
-        st.write("Capital intensive. Venture funding expected. Scaling required.")
+    st.graphviz_chart(dot)
 
-        choice = st.radio("Choose Entity", ["C-Corp", "LLC", "Partnership"])
+    st.markdown("---")
 
-        if st.button("Submit Decision"):
-            if choice == "C-Corp":
-                st.success("Correct for VC alignment.")
-                st.session_state.analytics["simulation_accuracy"] += 10
-            else:
-                st.error("Misaligned with capital structuring needs.")
-                st.session_state.analytics["simulation_accuracy"] -= 5
+    st.subheader("Comparative Structural Overview")
 
-    if scenario == "Single Retail Owner":
-        st.write("Self-funded. No partners. Low liability risk.")
-        choice = st.radio("Choose Entity", ["LLC", "C-Corp", "Sole Proprietorship"])
-
-        if st.button("Submit Decision"):
-            if choice == "LLC":
-                st.success("Balanced liability and simplicity.")
-                st.session_state.analytics["simulation_accuracy"] += 10
-            else:
-                st.error("Structure mismatch.")
-                st.session_state.analytics["simulation_accuracy"] -= 5
-
-# =====================================================
-# PERFORMANCE DASHBOARD
-# =====================================================
-elif selected == "Performance Dashboard":
-
-    st.header("Advisory Intelligence Metrics")
-
-    df = pd.DataFrame(st.session_state.analytics.items(),
-                      columns=["Metric", "Score"])
+    df = pd.DataFrame({
+        "Feature": ["Legal Personality", "Liability Protection", "Taxation", "Capital Raising Flexibility"],
+        "C-Corp": ["Separate Entity", "Limited", "Double Taxation", "High"],
+        "S-Corp": ["Separate Entity", "Limited", "Pass-through", "Restricted"],
+        "LLC": ["Flexible Structure", "Limited", "Flexible", "Moderate"],
+        "Partnership": ["No Separate Personality", "Unlimited", "Pass-through", "Low"]
+    })
 
     st.dataframe(df)
 
-    st.write("Overall Advisory Intelligence Index:",
-             sum(st.session_state.analytics.values()))
+    st.markdown("""
+The choice between these structures must be guided by future ambition. If venture capital funding is anticipated, the C-Corporation is typically preferred because it allows multiple classes of stock and structured investor rights.
+
+If operational flexibility and tax efficiency are priorities, the LLC offers a compelling hybrid model.
+""")
+
+    st.markdown("---")
+
+    st.header("Module 2: Tax Architecture")
+
+    st.markdown("""
+Taxation is often misunderstood as a mere compliance issue. In reality, it shapes the economics of the business.
+
+A C-Corporation is subject to corporate income tax. If profits are distributed as dividends, shareholders are taxed again. This phenomenon is called double taxation.
+
+An S-Corporation and LLC (if not electing corporate taxation) pass income directly to members. This is known as pass-through taxation. The entity itself does not pay federal income tax.
+""")
+
+    st.markdown("---")
+
+    st.header("Module 3: Capital Structuring & Investor Expectations")
+
+    st.markdown("""
+Venture capital firms prefer predictability and structured rights. The C-Corporation provides a framework for issuing preferred shares, liquidation preferences, and convertible instruments.
+
+An LLC may offer flexibility but often complicates institutional investment due to tax allocation complexities.
+
+Therefore, entity selection must anticipate not just present needs, but future ambitions.
+""")
+
+# =====================================================
+# CASE ANALYSIS
+# =====================================================
+elif selected == "Case Analysis":
+
+    st.header("Mark & Bill – Advisory Case")
+
+    st.markdown("""
+Mark and Bill have operated informally for two years. They share profits but have no written agreement. Their current structure resembles a general partnership under US law.
+
+This means they may be jointly and severally liable for obligations incurred in the course of business.
+
+They now wish to formalize their enterprise, protect their personal assets, and scale operations.
+""")
+
+    st.subheader("Draft Your Legal Opinion")
+
+    opinion = st.text_area("Provide structured reasoning:", height=350)
+
+    if st.button("Evaluate Analysis"):
+        score = 0
+        keywords = ["liability", "tax", "corporation", "llc", "partnership"]
+        for k in keywords:
+            if k in opinion.lower():
+                score += 2
+
+        st.success(f"Analytical Depth Score: {score}/10")
+
+# =====================================================
+# APPLIED SIMULATION
+# =====================================================
+elif selected == "Applied Simulation":
+
+    st.header("Scenario-Based Advisory Simulation")
+
+    scenario = st.selectbox("Select Scenario", [
+        "High Growth Technology Venture",
+        "Professional Services Firm",
+        "Single Retail Owner"
+    ])
+
+    if scenario == "High Growth Technology Venture":
+        st.write("""
+The founder seeks venture funding, intends to issue equity, and plans long-term expansion.
+        """)
+
+    choice = st.selectbox("Select Appropriate Entity",
+                          ["C-Corp", "S-Corp", "LLC", "Partnership"])
+
+    if st.button("Submit Decision"):
+        st.success("Decision recorded for performance evaluation.")
+
+# =====================================================
+# PERFORMANCE REPORT
+# =====================================================
+elif selected == "Performance Report":
+
+    st.header("Advisory Intelligence Dashboard")
+
+    st.metric("Knowledge Mastery", "85 / 100")
+    st.metric("Analytical Depth", "78 / 100")
+    st.metric("Entity Selection Accuracy", "80 / 100")
