@@ -1,21 +1,18 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="US Corporate Advisory Playbook", layout="wide")
+st.set_page_config(layout="wide")
 
-# ===============================
-# STYLE (MODERN COURSE PLATFORM)
-# ===============================
+# =========================
+# GLOBAL STYLE
+# =========================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-.stApp {
-    background-color: white;
-}
+.stApp { background-color: white; }
 
-.block-container {
-    padding: 0rem 8rem;
-}
+.block-container { padding: 2rem 3rem; }
 
 h1, h2, h3 {
     font-family: 'Poppins', sans-serif;
@@ -29,143 +26,146 @@ p {
     color: black !important;
 }
 
-.hero {
-    padding: 4rem 0rem 3rem 0rem;
-    border-bottom: 1px solid #eee;
+.lesson-video {
+    height: 300px;
+    background: linear-gradient(90deg, #b11226, #ff4d4d);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease;
 }
 
-.course-card {
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 25px;
-    margin-bottom: 25px;
-    transition: 0.3s ease;
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
 }
 
-.course-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    transform: translateY(-4px);
+.locked {
+    opacity: 0.4;
 }
-
-.section-content {
-    padding: 3rem 0rem;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# ===============================
-# HERO SECTION
-# ===============================
-st.markdown("<div class='hero'>", unsafe_allow_html=True)
-st.title("US Corporate Advisory Playbook")
-st.write("""
-Master the structural architecture of US business entities through
-deep analysis, applied case studies, and decision-based simulations.
+# =========================
+# SESSION STATE
+# =========================
+if "progress" not in st.session_state:
+    st.session_state.progress = 0
+    st.session_state.completed_lessons = []
+    st.session_state.current_lesson = "Module 1 - Lesson 1"
 
-This is not theory. This is structured advisory intelligence.
-""")
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ===============================
-# COURSE CURRICULUM SECTION
-# ===============================
-st.header("Curriculum")
-
-if "module" not in st.session_state:
-    st.session_state.module = None
-
-modules = {
-    "Foundations of US Business Structures":
-        "Understand legal personality, liability shields, and entity classification.",
-    "Taxation Architecture & Economic Impact":
-        "Deep dive into corporate taxation, pass-through entities, and structural tax consequences.",
-    "Capital Structuring & Venture Expectations":
-        "Learn how entity choice affects funding, equity structuring, and exit strategies.",
-    "Applied Advisory Case Study":
-        "Analyse Mark & Bill’s scenario and develop a structured legal opinion.",
-    "Strategic Simulation Lab":
-        "Test your advisory intelligence through decision-based entity simulations."
+# =========================
+# COURSE STRUCTURE
+# =========================
+course = {
+    "Module 1: Foundations": [
+        "Module 1 - Lesson 1",
+        "Module 1 - Lesson 2"
+    ],
+    "Module 2: Tax Architecture": [
+        "Module 2 - Lesson 1",
+        "Module 2 - Lesson 2"
+    ],
+    "Module 3: Capital Structuring": [
+        "Module 3 - Lesson 1"
+    ]
 }
 
-for title, desc in modules.items():
-    st.markdown("<div class='course-card'>", unsafe_allow_html=True)
-    st.subheader(title)
-    st.write(desc)
+# =========================
+# SIDEBAR CURRICULUM
+# =========================
+with st.sidebar:
+    st.header("Course Curriculum")
 
-    if st.button(f"Open Module: {title}"):
-        st.session_state.module = title
+    for module, lessons in course.items():
+        st.subheader(module)
 
-    st.markdown("</div>", unsafe_allow_html=True)
+        unlocked = True
+        if module == "Module 2: Tax Architecture" and "Module 1 - Lesson 2" not in st.session_state.completed_lessons:
+            unlocked = False
+        if module == "Module 3: Capital Structuring" and "Module 2 - Lesson 2" not in st.session_state.completed_lessons:
+            unlocked = False
 
-# ===============================
-# MODULE VIEW
-# ===============================
-if st.session_state.module:
+        for lesson in lessons:
+            if lesson in st.session_state.completed_lessons:
+                label = f"✔ {lesson} (15 min)"
+            else:
+                label = f"{lesson} (15 min)"
 
-    st.markdown("<div class='section-content'>", unsafe_allow_html=True)
-    st.header(st.session_state.module)
+            if not unlocked:
+                st.markdown(f"<div class='locked'>🔒 {label}</div>", unsafe_allow_html=True)
+            else:
+                if st.button(label):
+                    st.session_state.current_lesson = lesson
 
-    if st.session_state.module == "Foundations of US Business Structures":
+# =========================
+# MAIN CONTENT AREA
+# =========================
+st.title("US Corporate Advisory Playbook")
 
-        st.write("""
-When entrepreneurs enter the United States market, their first structural decision
-is the selection of a legal entity. This choice determines whether the business
-is treated as an independent legal personality or merely an extension of its founders.
+# Progress bar
+total_lessons = sum(len(v) for v in course.values())
+progress_percent = len(st.session_state.completed_lessons) / total_lessons
+st.progress(progress_percent)
 
-A corporation stands separate from its shareholders.
-It can sue, be sued, own property, and incur liabilities independently.
-This separation forms the foundation of the corporate veil.
+st.write(f"Course Progress: {int(progress_percent*100)}%")
 
-In contrast, a partnership exposes partners to personal liability.
-If the firm defaults, personal assets may be at risk.
-""")
+# =========================
+# LESSON CONTENT
+# =========================
+st.header(st.session_state.current_lesson)
 
-        st.write("""
-The distinction between incorporated and unincorporated entities
-is not merely academic — it determines the allocation of risk.
-""")
+# Video-like animated section
+st.markdown("<div class='lesson-video'></div>", unsafe_allow_html=True)
 
-    if st.session_state.module == "Taxation Architecture & Economic Impact":
+if st.session_state.current_lesson == "Module 1 - Lesson 1":
+    st.write("""
+When entering the United States market, the first legal decision an entrepreneur must take is the choice of entity. 
+This decision determines liability allocation, taxation structure, and governance architecture.
+    """)
 
-        st.write("""
-Taxation in the United States is structurally tied to entity form.
+elif st.session_state.current_lesson == "Module 1 - Lesson 2":
+    st.write("""
+A corporation exists as a separate legal personality. 
+It shields shareholders through the corporate veil, 
+provided formalities are respected.
+    """)
 
-A C-Corporation is subject to corporate income tax.
-If dividends are distributed, shareholders are taxed again.
-This creates the phenomenon of double taxation.
+elif st.session_state.current_lesson == "Module 2 - Lesson 1":
+    st.write("""
+Taxation architecture is central to structural design. 
+C-Corporations face double taxation, whereas LLCs may elect pass-through treatment.
+    """)
 
-An LLC may elect pass-through taxation.
-This means profits are taxed once at the member level.
-""")
+elif st.session_state.current_lesson == "Module 2 - Lesson 2":
+    st.write("""
+S-Corporations provide pass-through taxation but impose ownership restrictions.
+They cannot have foreign shareholders.
+    """)
 
-    if st.session_state.module == "Applied Advisory Case Study":
+elif st.session_state.current_lesson == "Module 3 - Lesson 1":
+    st.write("""
+Capital structuring is decisive when venture funding is anticipated.
+Only C-Corporations permit multiple classes of stock.
+    """)
 
-        st.write("""
-Mark and Bill have operated informally for two years.
-Their arrangement resembles a general partnership.
-They now seek structural protection and scalability.
+# =========================
+# COMPLETE LESSON BUTTON
+# =========================
+if st.button("Mark Lesson Complete"):
+    if st.session_state.current_lesson not in st.session_state.completed_lessons:
+        st.session_state.completed_lessons.append(st.session_state.current_lesson)
 
-Your task is to draft a legal opinion advising them on:
-• Liability implications
-• Tax considerations
-• Future capital ambitions
-""")
+# =========================
+# CONTINUE LEARNING
+# =========================
+def next_lesson():
+    lessons_flat = [l for lessons in course.values() for l in lessons]
+    current_index = lessons_flat.index(st.session_state.current_lesson)
+    if current_index + 1 < len(lessons_flat):
+        return lessons_flat[current_index + 1]
+    return None
 
-        opinion = st.text_area("Draft your legal opinion:", height=300)
-
-        if st.button("Submit Opinion"):
-            st.success("Opinion submitted for review.")
-
-    if st.session_state.module == "Strategic Simulation Lab":
-
-        st.write("""
-You will now enter a decision-based advisory simulation.
-Each scenario will test your ability to align entity choice
-with liability, taxation, and funding objectives.
-""")
-
-    if st.button("Back to Curriculum"):
-        st.session_state.module = None
-
-    st.markdown("</div>", unsafe_allow_html=True)
+next_l = next_lesson()
+if next_l:
+    if st.button("Continue Learning"):
+        st.session_state.current_lesson = next_l
